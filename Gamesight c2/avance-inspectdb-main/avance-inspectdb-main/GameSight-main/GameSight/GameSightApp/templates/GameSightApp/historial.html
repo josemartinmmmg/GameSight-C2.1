@@ -1,0 +1,111 @@
+{% extends 'GameSightApp/base_user.html' %}
+
+{% block title %}
+GameSight · Historial
+{% endblock %}
+
+{% block content %}
+
+<div class="head">
+
+    <div>
+        <h1>
+            {% if solo_favoritos %}
+                Mis favoritos
+            {% else %}
+                Historial de videojuegos
+            {% endif %}
+        </h1>
+
+        <p class="sub">
+            Consulta los videojuegos que analizaste,
+            su índice de potencial relativo y
+            las características de cada proyecto.
+        </p>
+    </div>
+
+    <a
+        class="btn primary"
+        href="{% url 'dashboard_usuario' %}">
+        + Analizar otro juego
+    </a>
+
+</div>
+
+<div class="cards">
+
+    {% for juego in registros %}
+
+    <article class="panel">
+
+        <span class="tag">
+            {{ juego.creado|date:"d/m/Y H:i" }}
+
+            {% if juego.favorito %}
+                · ♥ Favorito
+            {% endif %}
+        </span>
+
+        <h2 style="margin-top:15px">
+            {{ juego.nombre }}
+        </h2>
+
+        <p class="muted">
+            {{ juego.genero }}
+            ·
+            {{ juego.plataforma }}
+        </p>
+
+        <div class="score">
+            {{ juego.indice }}
+            <span style="font-size:18px">/100</span>
+        </div>
+
+        <p class="
+            {% if juego.indice >= 67 %}high
+            {% elif juego.indice >= 34 %}medium
+            {% else %}low{% endif %}">
+            {{ juego.nivel }}
+        </p>
+
+        <div class="bar">
+            <span style="width:{{ juego.indice }}%"></span>
+        </div>
+
+        <a
+            class="btn"
+            href="{% url 'gamesight_resultado' juego.pk %}">
+            Ver análisis y datos →
+        </a>
+
+    </article>
+
+    {% empty %}
+
+    <section class="panel">
+
+        <h2>Todavía no tienes análisis</h2>
+
+        <p class="sub">
+            Analiza tu primer videojuego
+            para guardarlo en el historial.
+        </p>
+
+        <a
+            class="btn primary"
+            href="{% url 'dashboard_usuario' %}">
+            Analizar mi videojuego
+        </a>
+
+    </section>
+
+    {% endfor %}
+
+</div>
+
+<p class="muted" style="margin-top:20px">
+    Este historial está asociado a la sesión
+    de tu navegador y se guarda en MySQL.
+</p>
+
+{% endblock %}

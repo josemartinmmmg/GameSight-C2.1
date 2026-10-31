@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameSight Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: linear-gradient(180deg, #070b16 0%, #0b1220 100%);
+            color: #f5f7ff;
+        }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 245px;
+            background: rgba(8,12,22,0.95);
+            border-right: 1px solid #1d2740;
+            padding: 18px;
+        }
+        .brand {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .brand-sub { color: #7e8aa8; font-size: 13px; margin-bottom: 28px; }
+        .menu-title {
+            color: #66728f;
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 18px 0 10px;
+        }
+        .menu a {
+            display: block;
+            padding: 12px 14px;
+            border-radius: 14px;
+            color: #ccd6f6;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+        .menu a.active, .menu a:hover {
+            background: linear-gradient(90deg, #5c6cff, #8a54ff);
+            color: white;
+        }
+        .profile-box {
+            margin-top: 28px;
+            padding: 14px;
+            border: 1px solid #202b45;
+            border-radius: 16px;
+            background: rgba(15,22,38,0.9);
+        }
+        .main {
+            flex: 1;
+            padding: 22px;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+        }
+        .page-title { font-size: 36px; font-weight: 800; margin: 0; }
+        .page-sub { color: #8fa0c4; margin-top: 6px; }
+        .search {
+            background: rgba(12,18,32,0.95);
+            border: 1px solid #263352;
+            border-radius: 16px;
+            padding: 12px 16px;
+            min-width: 340px;
+            color: white;
+        }
+        .tabs {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+        .tab, .status-pill {
+            background: rgba(16,24,42,.92);
+            border: 1px solid #23314f;
+            color: #dbe6ff;
+            padding: 10px 16px;
+            border-radius: 999px;
+        }
+        .tab.active {
+            background: linear-gradient(90deg, #5b6cff, #8555ff);
+            border-color: transparent;
+        }
+        .status-pill {
+            margin-left: auto;
+            color: #95f0bb;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .card, .panel {
+            background: rgba(12,18,32,.92);
+            border: 1px solid #1f2a44;
+            border-radius: 22px;
+            padding: 20px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.02), 0 14px 40px rgba(0,0,0,.18);
+        }
+        .metric-label { color: #8fa0c4; font-size: 14px; }
+        .metric-number { font-size: 38px; font-weight: 800; margin-top: 8px; }
+        .metric-foot { color: #56e39f; font-size: 13px; margin-top: 8px; }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 18px;
+        }
+        .filters .panel { padding: 16px; }
+        .filters label {
+            display: block;
+            font-size: 12px;
+            color: #8092b7;
+            margin-bottom: 8px;
+        }
+        select, input, button {
+            width: 100%;
+            background: #0c1324;
+            border: 1px solid #263352;
+            color: white;
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+        button.primary {
+            background: linear-gradient(90deg, #4e77ff, #8b5bff);
+            border: none;
+            cursor: pointer;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1.2fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1.3fr .8fr .8fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .panel h3 { margin: 0 0 6px; font-size: 25px; }
+        .panel p.panel-sub { color: #7e8aa8; margin: 0 0 14px; font-size: 14px; }
+        canvas { width: 100% !important; height: 320px !important; }
+        .small canvas { height: 260px !important; }
+        .table-wrap { overflow: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #1f2a44;
+            text-align: left;
+            font-size: 14px;
+        }
+        th { color: #8fa0c4; }
+        .table-panel { margin-top: 16px; }
+        .result-box {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+        }
+        .result-box .big {
+            font-size: 34px;
+            font-weight: 800;
+        }
+        @media (max-width: 1400px) {
+            .cards { grid-template-columns: repeat(2, 1fr); }
+            .filters { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid, .bottom-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+        .search-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: min(100%, 570px);
+}
+
+.search-form .search {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+}
+
+.search-button {
+    width: auto;
+    min-width: 100px;
+    background: linear-gradient(
+        90deg,
+        #4e77ff,
+        #8b5bff
+    );
+    border: none;
+    border-radius: 14px;
+    padding: 13px 20px;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    filter: brightness(1.15);
+}
+
+.search-results-info {
+    margin: 0 0 16px;
+    padding: 15px 18px;
+    background: #14223c;
+    border: 1px solid #28426c;
+    border-radius: 12px;
+    color: #ccd9f6;
+}
+
+@media (max-width: 700px) {
+    .search-form {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .search-button {
+        width: 100%;
+    }
+}
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+
+    <div class="brand">GameSight</div>
+
+    <div class="brand-sub">
+        Data-driven game insights
+    </div>
+
+    <div class="menu-title">
+        PRINCIPAL
+    </div>
+
+    <div class="menu">
+        <a href="/">
+            ⌂ Inicio
+        </a>
+
+        <a href="/usuario/">
+            ▣ Mi videojuego
+        </a>
+    </div>
+
+    <div class="menu-title">
+        ADMINISTRADOR
+    </div>
+
+    <div class="menu">
+        <a class="active" href="/dashboard/">
+            ◈ Overview
+        </a>
+    </div>
+
+    <div class="profile-box">
+        <strong>Administrador</strong>
+        <br>
+        <span style="color:#7e8aa8;">
+            GameSight Analytics
+        </span>
+    </div>
+
+</aside>
+
+    <main class="main">
+        <div class="topbar">
+            <div>
+                <h1 class="page-title">GameSight Analytics</h1>
+                <div class="page-sub">Vista general del dataset y comportamiento de los videojuegos analizados.</div>
+            </div>
+            <form
+    action="{% url 'dashboard' %}#catalogo"
+    method="get"
+    class="search-form">
+
+    <input
+        class="search"
+        type="search"
+        name="q"
+        placeholder="Buscar videojuegos, géneros, plataformas..."
+        value="{{ busqueda }}"
+        aria-label="Buscar videojuegos">
+
+    <button class="search-button" type="submit">
+        Buscar
+    </button>
+
+</form>
+        </div>
+
+      <div class="tabs">
+    <div class="status-pill">
+        ● MySQL · Dataset conectado
+    </div>
+</div>  
+
+        <section class="cards">
+            <div class="card">
+                <div class="metric-label">Videojuegos analizados</div>
+                <div class="metric-number">{{ total_juegos }}</div>
+                <div class="metric-foot">+12% vs. mes anterior</div>
+            </div>
+            <div class="card">
+                <div class="metric-label">Variables del dataset</div>
+                <div class="metric-number">43</div>
+                <div class="metric-foot">+0% sin cambios</div>
+            </div>
+            <div class="card">
+                <div class="metric-label">Rating promedio</div>
+                <div class="metric-number">{{ rating_promedio|floatformat:1 }}/10</div>
+                <div class="metric-foot">+0.3 vs. mes anterior</div>
+            </div>
+            <div class="card">
+                <div class="metric-label">Popularity promedio</div>
+                <div class="metric-number">{{ popularidad_promedio|floatformat:1 }}</div>
+                <div class="metric-foot" style="color:#ff985e;">-2.1 vs. mes anterior</div>
+            </div>
+            <div class="card">
+                <div class="metric-label">Engagement promedio</div>
+                <div class="metric-number">{{ engagement_promedio|floatformat:1 }}</div>
+                <div class="metric-foot">+4.5 vs. mes anterior</div>
+            </div>
+        </section>
+
+        <form class="filters panel" method="get">
+            <div>
+                <label>Buscar</label>
+                <input type="text" name="q" value="{{ busqueda }}" placeholder="Título...">
+            </div>
+            <div>
+                <label>Género</label>
+                <select name="genero">
+                    <option value="">Todos</option>
+                    {% for genero in lista_generos %}
+                    <option value="{{ genero }}" {% if genero == genero_seleccionado %}selected{% endif %}>{{ genero }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Plataforma</label>
+                <select name="plataforma">
+                    <option value="">Todas</option>
+                    {% for plataforma in lista_plataformas %}
+                    <option value="{{ plataforma }}" {% if plataforma == plataforma_seleccionada %}selected{% endif %}>{{ plataforma }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Rating</label>
+                <select name="rating">
+                    <option value="">Todos</option>
+                    <option value="alta" {% if rating_filtro == 'alta' %}selected{% endif %}>Alto</option>
+                    <option value="media" {% if rating_filtro == 'media' %}selected{% endif %}>Medio</option>
+                    <option value="baja" {% if rating_filtro == 'baja' %}selected{% endif %}>Bajo</option>
+                </select>
+            </div>
+            <div>
+                <label>Popularidad</label>
+                <select name="popularidad">
+                    <option value="">Todos</option>
+                    <option value="alta" {% if popularidad_filtro == 'alta' %}selected{% endif %}>Alta</option>
+                    <option value="media" {% if popularidad_filtro == 'media' %}selected{% endif %}>Media</option>
+                    <option value="baja" {% if popularidad_filtro == 'baja' %}selected{% endif %}>Baja</option>
+                </select>
+            </div>
+            <div>
+                <label>&nbsp;</label>
+                <button class="primary" type="submit">Aplicar filtros</button>
+            </div>
+            <div class="result-box">
+                <div>
+                    <div class="big">{{ resultados_encontrados }}</div>
+                    <div style="color:#8fa0c4;">resultados encontrados</div>
+                </div>
+            </div>
+        </form>
+
+        <section class="charts-grid">
+            <div class="panel">
+                <h3>Videojuegos por género</h3>
+                <p class="panel-sub">Top 10 géneros más representados en el dataset.</p>
+                <canvas id="graficoGeneros"></canvas>
+            </div>
+            <div class="panel">
+                <h3>Videojuegos por plataforma</h3>
+                <p class="panel-sub">Distribución de títulos según plataforma.</p>
+                <canvas id="graficoConsolas"></canvas>
+            </div>
+        </section>
+
+        <section class="bottom-grid">
+            <div class="panel small">
+                <h3>Tendencia por año</h3>
+                <p class="panel-sub">Evolución de videojuegos por año.</p>
+                <canvas id="graficoTendencia"></canvas>
+            </div>
+            <div class="panel small">
+                <h3>Distribución de ratings</h3>
+                <p class="panel-sub">Cantidad de videojuegos por rango.</p>
+                <canvas id="graficoDistribucionRatings"></canvas>
+            </div>
+            <div class="panel small">
+                <h3>Popularidad vs Engagement</h3>
+                <p class="panel-sub">Relación entre ambas variables.</p>
+                <canvas id="graficoScatter"></canvas>
+            </div>
+        </section>
+
+        <section class="panel table-panel" id="catalogo">
+            {% if busqueda %}
+
+<div class="search-results-info">
+
+    <strong>
+        Resultados de búsqueda
+    </strong>
+
+    <p>
+        Buscaste:
+        <strong>{{ busqueda }}</strong>
+    </p>
+
+    <p>
+        Se encontraron
+        <strong>{{ resultados_encontrados }}</strong>
+        videojuegos coincidentes.
+    </p>
+
+    <a
+        href="{% url 'dashboard' %}#catalogo"
+        style="color:#8caaff;">
+        Limpiar búsqueda
+    </a>
+
+</div>
+
+{% endif %}
+            <h3>Catálogo de videojuegos</h3>
+            <p class="panel-sub">Vista filtrada del dataset conectado a MySQL.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Género</th>
+                            <th>Plataformas</th>
+                            <th>Año</th>
+                            <th>Rating</th>
+                            <th>Popularidad</th>
+                            <th>Engagement</th>
+                            <th>Horas promedio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for juego in juegos %}
+                        <tr>
+                            <td>{{ juego.titulo }}</td>
+                            <td>{{ juego.genero|default:"Sin datos" }}</td>
+                            <td>{{ juego.plataformas|default:"Sin datos" }}</td>
+                            <td>{{ juego.anio|default:"—" }}</td>
+                            <td>{% if juego.rating != None %}{{ juego.rating|floatformat:1 }}{% else %}—{% endif %}</td>
+                            <td>{% if juego.popularidad != None %}{{ juego.popularidad|floatformat:1 }}{% else %}—{% endif %}</td>
+                            <td>{% if juego.engagement != None %}{{ juego.engagement|floatformat:1 }}{% else %}—{% endif %}</td>
+                            <td>{% if juego.horas_promedio != None %}{{ juego.horas_promedio|floatformat:1 }}{% else %}—{% endif %}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="8">No se encontraron videojuegos.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+{{ generos|json_script:"datos-generos" }}
+{{ consolas|json_script:"datos-consolas" }}
+{{ tendencia_anios|json_script:"datos-tendencia" }}
+{{ distribucion_ratings|json_script:"datos-distribucion" }}
+{{ scatter_pop_eng|json_script:"datos-scatter" }}
+
+<script>
+function leer(id){
+    const el = document.getElementById(id);
+    return el ? JSON.parse(el.textContent) : [];
+}
+
+const generos = leer("datos-generos");
+const consolas = leer("datos-consolas");
+const tendencia = leer("datos-tendencia");
+const distribucion = leer("datos-distribucion");
+const scatter = leer("datos-scatter");
+
+Chart.defaults.color = "#e9efff";
+Chart.defaults.borderColor = "rgba(130,149,191,0.18)";
+
+new Chart(document.getElementById("graficoGeneros"), {
+    type: "bar",
+    data: {
+        labels: generos.map(x => x.genero),
+        datasets: [{
+            label: "Videojuegos",
+            data: generos.map(x => x.total),
+            borderRadius: 10,
+            backgroundColor: [
+                "#4888ff","#7f5af0","#b15cff","#ff6ea8","#ff9255",
+                "#e0b54b","#55d8c1","#00d0ff","#59a5ff","#7bc0ff"
+            ]
+        }]
+    },
+    options: { indexAxis: "y", responsive:true, maintainAspectRatio:false }
+});
+
+new Chart(document.getElementById("graficoConsolas"), {
+    type: "bar",
+    data: {
+        labels: consolas.map(x => x.consola),
+        datasets: [{
+            label: "Videojuegos",
+            data: consolas.map(x => x.total),
+            borderRadius: 10,
+            backgroundColor: ["#20d4b4","#31b8ff","#00b0ff","#7f5af0","#ef78c5","#ff9255","#ffd166","#9da9c6"]
+        }]
+    },
+    options: { indexAxis: "x", responsive:true, maintainAspectRatio:false }
+});
+
+new Chart(document.getElementById("graficoTendencia"), {
+    type: "line",
+    data: {
+        labels: tendencia.map(x => x.anio),
+        datasets: [{
+            label: "Videojuegos",
+            data: tendencia.map(x => x.total),
+            borderColor: "#4f80ff",
+            backgroundColor: "rgba(79,128,255,.2)",
+            fill: true,
+            tension: .35
+        }]
+    },
+    options: { responsive:true, maintainAspectRatio:false }
+});
+
+new Chart(document.getElementById("graficoDistribucionRatings"), {
+    type: "bar",
+    data: {
+        labels: distribucion.map(x => x.rango),
+        datasets: [{
+            data: distribucion.map(x => x.total),
+            borderRadius: 10,
+            backgroundColor: ["#ff607d","#ff9255","#7f5af0","#4f80ff","#1fd1a5"]
+        }]
+    },
+    options: {
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins: { legend: { display: false } }
+    }
+});
+
+new Chart(document.getElementById("graficoScatter"), {
+    type: "scatter",
+    data: {
+        datasets: [{
+            label: "Popularidad vs Engagement",
+            data: scatter,
+            backgroundColor: "rgba(88,130,255,.8)"
+        }]
+    },
+    options: {
+        responsive:true,
+        maintainAspectRatio:false,
+        scales: {
+            x: { title: { display: true, text: "Popularidad" } },
+            y: { title: { display: true, text: "Engagement" } }
+        }
+    }
+});
+</script>
+</body>
+</html>

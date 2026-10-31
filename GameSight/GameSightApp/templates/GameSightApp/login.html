@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar | GameSight</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            color: #f4f6ff;
+            background:
+                radial-gradient(
+                    ellipse at 50% 5%,
+                    #192452 0%,
+                    transparent 60%
+                ),
+                #080d1b;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 6%;
+        }
+
+        .logo {
+            color: #ffffff;
+            font-size: 25px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #9062ff;
+        }
+
+        .volver {
+            color: #a5b8e7;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .contenedor {
+            min-height: calc(100vh - 95px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px 70px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            background: #11192d;
+            border: 1px solid #293454;
+            border-radius: 22px;
+            box-shadow: 0 25px 70px #0008;
+        }
+
+        .icono {
+            display: grid;
+            place-items: center;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 22px;
+            border-radius: 18px;
+            background: linear-gradient(
+                135deg,
+                #477bff,
+                #9148f5
+            );
+            font-size: 30px;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            text-align: center;
+            font-size: 30px;
+        }
+
+        .subtitulo {
+            margin-bottom: 30px;
+            color: #9caed0;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 9px;
+            color: #dce5ff;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 22px;
+            background: #0b1222;
+            border: 1px solid #34405f;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #8a65ff;
+            box-shadow: 0 0 0 3px #8a65ff22;
+        }
+
+        .boton {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(
+                100deg,
+                #477bff,
+                #9148f5
+            );
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .boton:hover {
+            filter: brightness(1.12);
+        }
+
+        .nota {
+            margin-top: 20px;
+            color: #99a9ca;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 500px) {
+            .login-card {
+                padding: 28px 22px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <a href="{% url 'index' %}" class="logo">
+            ◉ Game<span>Sight</span>
+        </a>
+
+        <a href="{% url 'index' %}" class="volver">
+            ← Volver al inicio
+        </a>
+    </header>
+
+    <main class="contenedor">
+
+        <section class="login-card">
+
+            <div class="icono">🎮</div>
+
+            <h1>Bienvenido a GameSight</h1>
+
+            <p class="subtitulo">
+                Selecciona tu tipo de cuenta e ingresa
+                tus datos para acceder a la plataforma.
+            </p>
+
+            <form method="POST" action="{% url 'ingresar' %}">
+                {% csrf_token %}
+
+                <label for="tipo">Tipo de cuenta</label>
+
+                <select name="tipo" id="tipo" required>
+                    <option value="usuario">Usuario normal</option>
+                    <option value="admin">Administrador</option>
+                </select>
+
+                <label for="correo">Correo electrónico</label>
+
+                <input
+                    type="email"
+                    id="correo"
+                    name="correo"
+                    placeholder="ejemplo@correo.com"
+                    autocomplete="off"
+                    required
+                >
+
+                <label for="password">Contraseña</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Ingresa una contraseña de prueba"
+                    autocomplete="off"
+                    required
+                >
+
+                <button type="submit" class="boton">
+                    Ingresar a GameSight
+                </button>
+
+            </form>
+
+            <p class="nota">
+                Modo demostración académica.
+                Utiliza datos ficticios.
+                El correo y la contraseña no se verifican.
+            </p>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

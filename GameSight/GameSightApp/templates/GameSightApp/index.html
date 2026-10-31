@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameSight | Inicio</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background:
+                radial-gradient(circle at top center, rgba(70, 100, 255, 0.12), transparent 32%),
+                linear-gradient(180deg, #050814 0%, #09101d 50%, #0b1220 100%);
+            color: #f4f7ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 34px;
+        }
+
+        .logo-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5f73ff, #8f5bff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 0 22px rgba(95,115,255,.4);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .nav-link {
+            color: #c6d0ea;
+            font-size: 14px;
+        }
+
+        .nav-button {
+            background: linear-gradient(90deg, #4e77ff, #875bff);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 8px 25px rgba(93,117,255,.28);
+        }
+
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px 90px;
+            text-align: center;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 24, 44, 0.92);
+            border: 1px solid rgba(95, 115, 170, 0.25);
+            color: #9db0da;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 13px;
+            margin-bottom: 26px;
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.015);
+        }
+
+        .hero h1 {
+            margin: 0;
+            max-width: 900px;
+            font-size: clamp(42px, 5vw, 76px);
+            line-height: 1.08;
+            font-weight: 900;
+            letter-spacing: -1.6px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #5f7dff 0%, #8b5cff 35%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: 28px auto 0;
+            color: #9ca9c6;
+            font-size: 18px;
+            line-height: 1.75;
+        }
+
+        .actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 34px;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 14px 24px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: .2s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #4f78ff, #8b5cff);
+            color: white;
+            box-shadow: 0 10px 28px rgba(79,120,255,0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(16, 24, 42, 0.95);
+            border: 1px solid #263352;
+            color: #dbe6ff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(25, 35, 58, 0.95);
+        }
+
+        .preview {
+            width: min(980px, calc(100% - 30px));
+            margin-top: 56px;
+            border-radius: 24px;
+            border: 1px solid rgba(55, 71, 105, 0.55);
+            background: linear-gradient(180deg, rgba(12,18,32,.96), rgba(10,15,28,.98));
+            box-shadow:
+                0 30px 100px rgba(0, 0, 0, .45),
+                0 0 0 1px rgba(255,255,255,0.02);
+            overflow: hidden;
+        }
+
+        .preview-topbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(46, 59, 89, .55);
+            color: #7b89aa;
+            font-size: 13px;
+        }
+
+        .dots {
+            display: flex;
+            gap: 7px;
+            margin-right: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot.red { background: #ff5f57; }
+        .dot.yellow { background: #febc2e; }
+        .dot.green { background: #28c840; }
+
+        .preview-content {
+            height: 330px;
+            position: relative;
+            padding: 26px 26px 24px;
+            background:
+                linear-gradient(transparent 31px, rgba(39,57,92,.24) 32px),
+                linear-gradient(90deg, transparent 31px, rgba(39,57,92,.20) 32px);
+            background-size: 32px 32px;
+        }
+
+        .chart-labels {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            color: #7283aa;
+            font-size: 12px;
+            letter-spacing: .4px;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .footer-note {
+            margin-top: 18px;
+            color: #6f7f9f;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 18px;
+            }
+
+            .nav-right {
+                gap: 10px;
+            }
+
+            .nav-link {
+                display: none;
+            }
+
+            .hero {
+                padding-top: 20px;
+                padding-bottom: 50px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .preview-content {
+                height: 230px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        
+    <header class="navbar">
+        <div class="logo-wrap">
+            <div class="logo-icon">◉</div>
+            <div class="logo-text">GameSight</div>
+        </div>
+    </header>
+
+
+        <main class="hero">
+            <div class="pill">
+                <span>{{ total_juegos|default:"15K+" }} videojuegos analizados</span>
+                <span>•</span>
+                <span>{{ total_variables|default:"43" }} variables</span>
+            </div>
+
+            <h1>
+                Descubre qué características
+                <span class="gradient-text">se relacionan con el éxito</span>
+                de un videojuego
+            </h1>
+
+            <p>
+                GameSight transforma datos de miles de videojuegos en información visual
+                para ayudarte a tomar mejores decisiones durante el desarrollo de tu próximo proyecto.
+            </p>
+
+            <div class="actions">
+                <a href="{% url 'ingresar' %}" class="btn btn-primary">
+                Ingresar
+                </a>
+            </div>
+
+            <section class="preview">
+                <div class="preview-topbar">
+                    <div class="dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span>gamesight</span>
+                    <span>•</span>
+                    <span>análisis comparativo</span>
+                </div>
+
+                <div class="preview-content">
+                    <div class="chart-labels">Popularity %</div>
+
+                    <svg class="chart-svg" viewBox="0 0 900 300" preserveAspectRatio="none">
+                        <g fill="none" stroke="rgba(80,100,145,0.25)" stroke-width="1">
+                            <line x1="0" y1="260" x2="900" y2="260"></line>
+                            <line x1="0" y1="200" x2="900" y2="200"></line>
+                            <line x1="0" y1="140" x2="900" y2="140"></line>
+                            <line x1="0" y1="80" x2="900" y2="80"></line>
+                            <line x1="0" y1="20" x2="900" y2="20"></line>
+                        </g>
+
+                        <g fill="#3b82f6">
+                            <circle cx="35" cy="235" r="4"></circle>
+                            <circle cx="62" cy="180" r="4"></circle>
+                            <circle cx="95" cy="110" r="4"></circle>
+                            <circle cx="120" cy="210" r="4"></circle>
+                            <circle cx="145" cy="160" r="4"></circle>
+                            <circle cx="175" cy="150" r="4"></circle>
+                            <circle cx="205" cy="120" r="4"></circle>
+                            <circle cx="235" cy="190" r="4"></circle>
+                            <circle cx="260" cy="220" r="4"></circle>
+                            <circle cx="290" cy="95" r="4"></circle>
+                            <circle cx="325" cy="205" r="4"></circle>
+                            <circle cx="352" cy="225" r="4"></circle>
+                            <circle cx="382" cy="170" r="4"></circle>
+                            <circle cx="410" cy="85" r="4"></circle>
+                            <circle cx="438" cy="145" r="4"></circle>
+                            <circle cx="468" cy="72" r="4"></circle>
+                            <circle cx="498" cy="130" r="4"></circle>
+                            <circle cx="528" cy="76" r="4"></circle>
+                            <circle cx="560" cy="196" r="4"></circle>
+                            <circle cx="590" cy="155" r="4"></circle>
+                            <circle cx="622" cy="78" r="4"></circle>
+                            <circle cx="650" cy="220" r="4"></circle>
+                            <circle cx="680" cy="174" r="4"></circle>
+                            <circle cx="706" cy="122" r="4"></circle>
+                            <circle cx="735" cy="108" r="4"></circle>
+                            <circle cx="765" cy="102" r="4"></circle>
+                            <circle cx="792" cy="92" r="4"></circle>
+                            <circle cx="823" cy="112" r="4"></circle>
+                            <circle cx="850" cy="114" r="4"></circle>
+                            <circle cx="880" cy="108" r="4"></circle>
+                        </g>
+                    </svg>
+                </div>
+            </section>
+
+            <div class="footer-note">
+                Interfaz inicial de GameSight · Inicio visual del proyecto
+            </div>
+        </main>
+    </div>
+</body>
+</html>
